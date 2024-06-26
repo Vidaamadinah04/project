@@ -1,0 +1,86 @@
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(90deg, #1b1647 0%, rgb(16, 11, 65) 35%, rgb(16,11,65) 35%);
+      font-family: 'Poppins', sans-serif;
+      display: flex; /* Menggunakan Flexbox untuk layout */
+      justify-content: center; /* Memposisikan konten ke tengah horizontal */
+      align-items: center; /* Memposisikan konten ke tengah vertikal */
+      height: 100vh; /* Menjadikan tinggi body setara dengan tinggi viewport */
+    }
+
+    .container {
+      display: flex; /* Menggunakan Flexbox untuk layout */
+      align-items: center; /* Memposisikan konten ke tengah vertikal */
+      max-width: 800px; /* Lebar maksimum container */
+    }
+    .form-label, .form-control {
+      font-weight: normal;
+  }
+    .login-form {
+      border-radius: 20px;
+      background-color: white;
+      padding: 50px;
+      flex: 1; /* Membuat form login memenuhi sisa ruang yang tersedia */
+    }
+    .login {
+        border-radius: 20px;
+        background-color: white;
+        padding: 30px;
+        flex: 1; /* Membuat form login memenuhi sisa ruang yang tersedia */
+      }
+
+    .login-image {
+      flex: 1; /* Membuat gambar memenuhi sisa ruang yang tersedia */
+      margin-right:0px;
+    }
+
+    .login-image img {
+      width: 800%; /* Gambar mengisi lebar elemen parent */
+      
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(90deg, rgb(8, 8, 51) 0%, rgb(8, 8, 51) 35%, rgb(8,8,51) 100%);
+    }
+
+    .form-control {
+      color: rgba(0, 0, 0, .87);
+      border-bottom-color: rgba(0, 0, 0, .42);
+      box-shadow: none !important;
+      border: none;
+      border-bottom: 1px solid;
+      border-radius: 4px 4px 0 0;
+    }
+
+    h4 {
+      font-size: 2rem !important;
+      font-weight: 700;
+    }
+
+    .form-label {
+      font-weight: 800 !important;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .container {
+        flex-direction: column; /* Mengubah layout menjadi vertikal pada layar kecil */
+        align-items: center; /* Memposisikan konten ke tengah vertikal */
+      }
+
+      .login-form,
+      .login-image {
+        width: 100%; /* Form dan gambar mengisi lebar layar pada layar kecil */
+        margin-bottom: 20px; /* Memberikan jarak antara form dan gambar pada layar kecil */
+      }
+    }
