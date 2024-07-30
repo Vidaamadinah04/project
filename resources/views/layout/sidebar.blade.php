@@ -19,13 +19,15 @@
             <p>Dashboard</p>
           </a>
         </li>
-        
-      <li class="nav-item  ">
-                <a href="{{ route('kategori.index') }}" >
-                  <i class="nc-icon nc-tile-56"></i>
-                  <p>Kategori</p>
-                </a>
-              </li>
+        @if (auth()->user()->hasRole('admin'))
+        <li class="nav-item  ">
+          <a href="{{ route('kategori.index') }}" >
+            <i class="nc-icon nc-tile-56"></i>
+            <p>Kategori</p>
+          </a>
+        </li>
+        @endif
+    
               <li>
                 <a href="{{ route('barang.index') }}">
                     <i class="nc-icon nc-box"></i>
@@ -38,25 +40,29 @@
                 </ul>
           </li>
         
-       
+          @if (auth()->user()->hasRole('admin'))
+
         <li>
           <a href="./notifications.html">
             <i class="nc-icon nc-credit-card"></i>
             <p>Transaksi</p>
           </a>
         </li>
+        @endif
         <li>
-          <a href="{{ route('laporan.index') }}">
+          <a href="{{ route('admin.laporan') }}">
             <i class="nc-icon nc-paper"></i>
             <p>Laporan</p>
           </a>
         </li>
+        @if (auth()->user()->hasRole('admin'))
         <li>
-          <a href="{{ route('pengguna.index') }}">
+          <a href="{{ route('admin.pengguna') }}">
             <i class="nc-icon nc-circle-10"></i>
             <p>Kelola Akun Pengguna</p>
           </a>
-        </li>
+        </li>   
+        @endif
         
         {{-- <li>
           <a href="./user.html">

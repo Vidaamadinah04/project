@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Sewa;
 use App\Models\Kategori;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 // class Produk extends Model
@@ -37,4 +38,17 @@ class Produk extends Model
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
     }
+    // public function keranjang()
+    // {
+    //     return $this->hasMany(Keranjang::class);
+    // }
+    public function detailSewas()
+    {
+        return $this->hasMany(DetailSewa::class);
+    }
+    public function sewas()
+    {
+        return $this->hasMany(Sewa::class);
+    }
 }
+

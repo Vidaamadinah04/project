@@ -41,7 +41,7 @@
                                         <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Login Menggunakan Akun Anda</h5>
 
                                         <div class="form-outline mb-4">
-                                            <label class="form-label" for="form2Example17">Username*</label>
+                                            <label class="form-label" for="form2Example17">Email*</label>
                                             <input type="email" name="email" class="form-control form-control-lg input @error('username') is-invalid @enderror" name="username" id="form2Example17">
                                             @error('email')
                                             <small>{{$message}}</small>

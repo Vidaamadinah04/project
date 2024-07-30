@@ -75,7 +75,7 @@
                     </div>
                 </div>
             
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
             
                     <div class="col-md-6">
@@ -87,7 +87,7 @@
                             </span>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
             
                 <div class="row mb-0">
                     <div class="col-md-6 offset-md-4">
@@ -95,7 +95,7 @@
                             {{ __('Register') }}
                         </button>
                     </div>
-                    <div class="form-text mt-3">Belum mempunyai akun? 
+                    <div class="form-text mt-3">Sudah mempunyai akun? 
                         <a href="{{ route('login') }}">Masuk</a>
                     </div>
                 </div>

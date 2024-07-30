@@ -27,6 +27,7 @@
               </div>
           </form>
           <ul class="navbar-nav">
+            @if (auth()->user()->hasRole('pelanggan'))
               <li class="nav-item">
                   <a class="nav-link" href="/keranjang">
                       <i class="fas fa-shopping-cart"></i>
@@ -35,6 +36,7 @@
                       </p>
                   </a>
               </li>
+              @endif
               <li class="nav-item btn-rotate dropdown">
                   <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

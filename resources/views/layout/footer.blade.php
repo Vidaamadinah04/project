@@ -2,7 +2,6 @@
     <div class="container-fluid">
       
           <span class="copyright">
-          
           </span>
         </div>
       </div>

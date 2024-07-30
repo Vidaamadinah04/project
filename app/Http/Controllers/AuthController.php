@@ -50,7 +50,6 @@ class AuthController extends Controller
             'username' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required|string|max:255',
         ]);
 
         // Simpan data pengguna baru ke dalam database
@@ -58,10 +57,10 @@ class AuthController extends Controller
             'username' => $request->input('username'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
-            'role' => $request->input('role')
+            'role' => 1
         ];
 
-        User::create($data);
+        User::create($data)->assignRole('pelanggan');
 
         // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
         return redirect()->route('login')->with('success', 'Registrasi berhasil!');
@@ -72,57 +71,74 @@ class AuthController extends Controller
     {
     // Ambil semua pengguna dari database
     $users = User::all();
-    return view('pengguna.index', ['users' => $users]);
+    return view('admin.pengguna', ['users' => $users]);
     }   
     public function destroy(User $user)
     {
     $user->delete();
-    return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil dihapus!');
+    return redirect()->route('admin.pengguna')->with('success', 'Pengguna berhasil dihapus!');
     }
 
     public function store(Request $request)
-{
-    // Validasi data yang dikirim dari form
-    $request->validate([
-        'username' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8', 
-        'role' => 'required|string|max:255',
-    ]);
-
-    // Simpan data pengguna baru ke dalam database
-    User::create([
-        'username' => $request->username,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => $request->role,
-    ]);
-
-    // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
-    return redirect()->route('pengguna.index')->with('success', 'Registrasi berhasil!');
-}
-
-public function update(Request $request, User $user)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'email' => 'required|email',
-            'role' => 'required|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
         ]);
 
-        $user->update([
-            'username' => $request->username,
-            'email' => $request->email,
-            'role' => $request->role,
-        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
 
-        return response()->json(['message' => 'Data pengguna berhasil diperbarui.']);
+        try {
+            User::create([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            return response()->json(['message' => 'Pengguna berhasil ditambahkan.']);
+        } catch (\Exception $e) {
+            Log::error('Error creating user: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menambahkan pengguna.'], 500);
+        }
     }
 
     public function edit(User $user)
     {
         return response()->json(['data' => $user]);
     }
+
+    public function update(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        try {
+            $user->update([
+                'username' => $request->username,
+                'email' => $request->email,
+            ]);
+
+            return response()->json(['message' => 'Data pengguna berhasil diperbarui.']);
+        } catch (\Exception $e) {
+            Log::error('Error updating user: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal memperbarui pengguna.'], 500);
+        }
+    }
     
+    public function getTotalUser()
+    {
+        
+        $totalUsers = User::count(); // Ambil jumlah pengguna dari database
+        return view('admin.dashboard', compact('totalUsers'));
+    }
     
 }

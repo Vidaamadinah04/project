@@ -9,14 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('kategori', function (Blueprint $table) {
+        Schema::create('detail_sewas', function (Blueprint $table) {
             $table->id();
-            // $table->char('kode_kategori');
-            $table->string('nama_kategori');
+            $table->unsignedBigInteger('sewa_id');
+            $table->foreignId('produk_id')->constrained('produks')->onDelete('cascade');
+            $table->integer('jumlah');
+            $table->decimal('sub_total', 15, 2);
             $table->timestamps();
         });
+    
     }
 
     /**
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kategori');
+        Schema::dropIfExists('detail_sewas');
     }
 };

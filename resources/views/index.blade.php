@@ -36,7 +36,7 @@
             <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
                 <div class="m-4 m-lg-5">
                     <h1 class="display-5 fw-bold">Selamat datang!</h1>
-                    <p class="fs-4"> di Sufi Oudoor</p>
+                    <p class="fs-4"> di Sufi Outdoor</p>
                     <a class="btn btn-primary btn-lg" href="#koleksi">Koleksi</a>
                 </div>
             </div>
@@ -51,14 +51,19 @@
             <!-- Page Features-->
             <div class="row">
                 @foreach($produks as $produk)
-    <div class="col-lg-3 mb-5">
-      <div class="card bg-light border-0 h-80">
-        <div class="card-body text-center p-3 p-lg-5 pt-0 pt-lg-0">
-          <a href="#productDetailsModal{{ $produk->id }}" data-bs-toggle="modal" data-bs-target="#productDetailsModal{{ $produk->id }}">
-            <img src="{{ asset('storage/'. $produk->gambar) }}" class="img-fluid mb-3" alt="{{ $produk->nama_produk }}">
-          </a>
-          <h2 class="fs-4 fw-bold">{{ $produk->nama_produk }}</h2>
-          <p class="mb-0">Rp.{{ $produk->harga }}</p>
+                <div class="col-lg-3 mb-5">
+                  <div class="card bg-light border-0 h-80">
+                    <div class="card-body text-center p-3 p-lg-5 pt-0 pt-lg-0">
+                      <a href="#productDetailsModal{{ $produk->id }}" data-bs-toggle="modal" data-bs-target="#productDetailsModal{{ $produk->id }}">
+                        <img src="{{ asset('storage/'. $produk->gambar) }}" class="img-fluid mb-3" alt="{{ $produk->nama_produk }}">
+                      </a>
+                      <h2 class="fs-4 fw-bold">{{ $produk->nama_produk }}</h2>
+                      <p class="mb-0">Rp.{{ $produk->harga }}</p>
+            
+          <br>
+          <a href="{{ route('login') }}" class="btn btn-primary">Sewa</a>
+
+          
 
         </div>
       </div>
@@ -75,7 +80,10 @@
     <!-- Footer-->
     <footer class="py-5 bg-dark" id="kontak">
         <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; Your Website 2024</p>
+            <a href="https://wa.me/083148763559" target="_blank" style="text-decoration: none; color: inherit;">
+                <img src="public/admin/assets/img/WhatsApp.svg" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle;">
+                083148763559
+              </a>        
         </div>
     </footer>
     <!-- Bootstrap core JS-->
