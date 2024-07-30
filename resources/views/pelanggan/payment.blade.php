@@ -17,6 +17,7 @@
     payButton.addEventListener('click', function () {
         window.snap.pay('{{ $snapToken }}', {
             onSuccess: function(result){
+                //panggil atau eksekusi fungsi callback disini menggunakan ajax
                 console.log(result);
             },
             onPending: function(result){

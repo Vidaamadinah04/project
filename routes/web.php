@@ -73,12 +73,12 @@ use App\Http\Controllers\Auth\RegisterController;
     //     return view('admin.laporan');
     // })->name('admin.laporan');
     //checkout
-    Route::get('/checkout', [CheckoutController::class, 'showForm'])->name('pelanggan.checkout');
-    Route::post('/checkout', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+    // Route::get('/checkout', [CheckoutController::class, 'showForm'])->name('pelanggan.checkout');
+    // Route::post('/checkout', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
     });
     //payment
     Route::post('/checkout', [SewaController::class, 'store'])->name('pelanggan.payment');
-    Route::post('/midtrans-callback', [SewaController::class, 'midtrans.callback']);
+    Route::post('/midtrans-callback', [SewaController::class, 'callback']);
     // Route::get('/', function () {
     // return view('index');
     // });

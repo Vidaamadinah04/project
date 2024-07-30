@@ -48,7 +48,7 @@ class SewaController extends Controller
 
         $params = [
             'transaction_details' => [
-                'order_id' => uniqid(),
+                'order_id' => $sewas[0]->id,
                 'gross_amount' => array_sum($validated['total_harga']),
             ],
             'customer_details' => [
@@ -72,11 +72,18 @@ class SewaController extends Controller
 
     public function callback(Request $request)
     {
-        $serverKey = config('MIDTRANS_SERVER_KEY');
-        $hashed = hash("sha512", $request->$order_id.$request->status_code.$request->gross_amount.$serverKey);
-        if($request->transaction_status == 'capture'){
+        $serverKey = env('MIDTRANS_SERVER_KEY');
+        $message = '';
+        $hashed = hash("sha512", $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
+        if($request->transaction_status == 'settlement'){
+            $message='ok';
             $sewa = Sewa::find($request->order_id);
             $sewa->update(['status' => 'paid']);
+        }else{
+            $message = 'not ok';
         }
+        return response()->json([
+            'message' => $message
+        ]);
     }
 }

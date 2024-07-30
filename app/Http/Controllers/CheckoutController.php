@@ -29,6 +29,7 @@ class CheckoutController extends Controller
 
 public function processCheckout(Request $request)
 {
+    // dd('hw=ere');
     $buktiIdentitasPath = $request->file('bukti_identitas')->store('bukti_identitas');
     $produk_id = $request->id_barang;    
     $produk = Produk::find($produk_id);
@@ -116,12 +117,12 @@ public function callback(Request $request)
 //         // Tangani kasus jika signature_key tidak cocok
 //         \Log::warning('Signature key tidak cocok untuk order_id: ' . $request->order_id);
 //     }
-// //    $serverKey = config('midtrans.server_key');
-// //    $hashed = hash("sha512", $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
-// //    if($hashed == $request->signature_key){
-// //     $sewa == Sewa::find($request->order_id);
-// //     $sewa->update(['status' => 'Paid']);
-// //    }
+//    $serverKey = config('midtrans.server_key');
+//    $hashed = hash("sha512", $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
+//    if($hashed == $request->signature_key){
+//     $sewa == Sewa::find($request->order_id);
+//     $sewa->update(['status' => 'Paid']);
+//    }
 // }
 
 }
