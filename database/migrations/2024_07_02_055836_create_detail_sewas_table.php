@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('detail_sewas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sewa_id');
-            $table->foreignId('produk_id')->constrained('produks')->onDelete('cascade');
+            $table->foreignId('sewa_id');
+            $table->foreignId('produk_id');
             $table->integer('jumlah');
             $table->decimal('sub_total', 15, 2);
             $table->timestamps();

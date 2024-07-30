@@ -6,6 +6,7 @@ use Midtrans\Snap;
 use App\Models\Sewa;
 use Midtrans\Config;
 use App\Models\Produk;
+use App\Models\DetailSewa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +14,7 @@ class SewaController extends Controller
 {
     public function store(Request $request)
     {
+        // dd($request);
         $validated = $request->validate([
             'bukti_identitas' => 'required|file|mimes:jpg,png,jpeg',
             'tanggal_sewa' => 'required|date',
@@ -22,34 +24,54 @@ class SewaController extends Controller
             'total_harga.*' => 'required|numeric|min:0',
         ]);
 
-        $bukti_identitas_path = $request->file('bukti_identitas')->store('bukti_identitas', 'public');
-        
-        $sewas = [];
-        foreach ($validated['id_barang'] as $key => $produk_id) {
-            $sewa = new Sewa;
-            $sewa->produk_id = $produk_id;
-            $sewa->user_id = Auth::id();
-            $sewa->tanggal_sewa = $validated['tanggal_sewa'];
-            $sewa->tanggal_pengembalian = $validated['tanggal_pengembalian'];
-            $sewa->jumlah = $validated['jumlah'][$key];
-            $sewa->total_harga = $validated['total_harga'][$key];
-            $sewa->bukti_identitas = $bukti_identitas_path;
-            $sewa->status = 'pending';
-            $sewa->save();
+        $buktiIdentitasPath = $request->file('bukti_identitas')->store('bukti_identitas');
+        $produk_ids = $request->id_barang;
 
-            $sewas[] = $sewa;
+        $user_id = Auth::id();
+
+        $total = 0;
+
+        // Buat transaksi sewa
+        $sewa = Sewa::create([
+            'user_id' => $user_id,
+            'bukti_identitas' => $buktiIdentitasPath,
+            'tanggal_sewa' => $request->tanggal_sewa,
+            'tanggal_pengembalian' => $request->tanggal_pengembalian,
+            'total_harga' => $total,
+            'status' => 'pending',
+        ]);
+
+        // Buat detail transaksi sewa
+        foreach ($produk_ids as $index => $produk_id) {
+            $produk = Produk::find($produk_id);
+            if (!$produk) {
+                return redirect()->back()->withErrors(['Produk tidak ditemukan']);
+            }
+
+            DetailSewa::create([
+                'sewa_id' => $sewa->id,
+                'produk_id' => $produk_id,
+                'jumlah' => $request->jumlah[$index],
+                'sub_total' => $request->total_harga[$index],
+            ]);
+
+            $total += $request->total_harga[$index];
         }
 
-        // Konfigurasi Midtrans
+        $sewa->update(['total_harga'=>$total]);
+
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = false;
+        Config::$isProduction =  false;
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
+        // \Log::info('Midtrans Server Key: ' . Config::$serverKey);
+        // \Log::info('Midtrans Client Key: ' . config('services.midtrans.client_key'));
+
         $params = [
             'transaction_details' => [
-                'order_id' => $sewas[0]->id,
-                'gross_amount' => array_sum($validated['total_harga']),
+                'order_id' => $sewa->id,
+                'gross_amount' => $sewa->total_harga,
             ],
             'customer_details' => [
                 'first_name' => Auth::user()->name,
@@ -59,8 +81,8 @@ class SewaController extends Controller
         ];
 
         $snapToken = Snap::getSnapToken($params);
-
-        return view('pelanggan.payment', compact('snapToken', 'sewas'));
+        return view('pelanggan.payment', compact('snapToken', 'sewa'));
+    
     }
     public function show()
     {

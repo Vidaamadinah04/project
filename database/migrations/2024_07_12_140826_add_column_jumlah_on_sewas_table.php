@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sewas', function (Blueprint $table) {
-            $table->integer('jumlah');
-        });
+        // Schema::table('sewas', function (Blueprint $table) {
+        //     $table->integer('jumlah');
+        // });
     }
 
     /**
