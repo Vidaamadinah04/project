@@ -110,6 +110,10 @@
                         <label for="editEmail">Email</label>
                         <input type="email" class="form-control" id="editEmail" name="email" placeholder="Masukkan Email">
                     </div>
+                    <div class="form-group">
+                        <label for="editPassword">Password (kosongkan jika tidak diubah)</label>
+                        <input type="password" class="form-control" id="editPassword" name="password" placeholder="Masukkan Password">
+                    </div>
                     
                 </form>
             </div>
@@ -124,68 +128,67 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-   function submitTambahForm() {
-    var formData = $('#tambahForm').serialize();
-    $.ajax({
-        url: '{{ route('pengguna.store') }}',
-        type: 'POST',
-        data: formData,
-        success: function(response) {
-            $('#tambahPenggunaModal').modal('hide');
-            Swal.fire('Sukses', 'Pengguna berhasil ditambahkan!', 'success').then(() => {
-                location.reload();
-            });
-        },
-        error: function(xhr) {
-            console.error(xhr.responseText);
-            Swal.fire('Error', 'Gagal menambahkan pengguna.', 'error');
-        }
-    });
-}
+    function submitTambahForm() {
+        var formData = $('#tambahForm').serialize();
+        $.ajax({
+            url: '{{ route('pengguna.store') }}',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                $('#tambahPenggunaModal').modal('hide');
+                Swal.fire('Sukses', response.message, 'success').then(() => {
+                    location.reload();
+                });
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                var errors = JSON.parse(xhr.responseText);
+                Swal.fire('Error', errors.errors ? errors.errors.username[0] : 'Gagal menambahkan pengguna.', 'error');
+            }
+        });
+    }
 
-function showEditModal(userId) {
-    var csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+    function showEditModal(userId) {
+        $.ajax({
+            url: '/akun/' + userId + '/edit',
+            type: 'GET',
+            success: function(response) {
+                $('#editUserId').val(response.data.id);
+                $('#editUsername').val(response.data.username);
+                $('#editEmail').val(response.data.email);
+                $('#editForm').attr('action', '/akun/' + response.data.id); // Update action form
+                $('#editPenggunaModal').modal('show');
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                Swal.fire('Error', 'Gagal memuat data pengguna.', 'error');
+            }
+        });
+    }
 
-    $.ajax({
-        url: '/akun/' + userId + '/edit',
-        type: 'GET',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-        },
-        success: function(response) {
-            $('#editUserId').val(response.data.id);
-            $('#editUsername').val(response.data.username);
-            $('#editEmail').val(response.data.email);
-            $('#editForm').attr('action', '/akun/' + response.data.id); // Update action form
-            $('#editPenggunaModal').modal('show');
-        },
-        error: function(xhr) {
-            console.error(xhr.responseText);
-            Swal.fire('Error', 'Gagal memuat data pengguna.', 'error');
-        }
-    });
-}
-
-function submitEditForm() {
-    var userId = $('#editUserId').val();
-    var formData = $('#editForm').serialize();
-    $.ajax({
-        url: '/akun/' + userId,
-        type: 'PUT',
-        data: formData,
-        success: function(response) {
-            $('#editPenggunaModal').modal('hide');
-            Swal.fire('Sukses', 'Data pengguna berhasil diperbarui!', 'success').then(() => {
-                location.reload();
-            });
-        },
-        error: function(xhr) {
-            console.error(xhr.responseText);
-            Swal.fire('Error', 'Gagal menyimpan perubahan pengguna.', 'error');
-        }
-    });
-}
+    function submitEditForm() {
+        var userId = $('#editUserId').val();
+        var formData = $('#editForm').serialize();
+        $.ajax({
+            url: '/akun/' + userId,
+            type: 'PUT',
+            data: formData,
+            success: function(response) {
+                $('#editPenggunaModal').modal('hide');
+                Swal.fire('Sukses', response.message, 'success').then(() => {
+                    location.reload();
+                });
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                var errors = JSON.parse(xhr.responseText);
+                Swal.fire('Error', errors.errors ? errors.errors.username[0] : 'Gagal menyimpan perubahan pengguna.', 'error');
+            }
+        });
+    }
 </script>
 
 @if(session('success'))

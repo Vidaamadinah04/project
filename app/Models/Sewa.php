@@ -37,4 +37,13 @@ class Sewa extends Model
     {
         return $this->hasMany(DetailSewa::class);
     }
+    public function details()
+    {
+        return $this->hasMany(DetailSewa::class);
+    }
+    public function user_id()
+    {
+        return $this->belongsTo(User::class, 'username');
+    }
+    
 }

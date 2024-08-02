@@ -23,5 +23,14 @@ class DetailSewa extends Model
     {
         return $this->hasOne(Produk::class);
     }
-    
+    public function sewas()
+    {
+        return $this->belongsTo(Sewa::class, 'sewa_id');
+    }
+    public function produkMany()
+    {
+        return $this->belongsTo(Produk::class, 'produk_id');
+
+    }
+
 }

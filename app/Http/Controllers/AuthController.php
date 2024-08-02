@@ -80,59 +80,66 @@ class AuthController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+{
+    $validator = Validator::make($request->all(), [
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 400);
+    }
+
+    try {
+        User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
+        return response()->json(['message' => 'Pengguna berhasil ditambahkan.']);
+    } catch (\Exception $e) {
+        Log::error('Error creating user: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal menambahkan pengguna.'], 500);
+    }
+}
 
-        try {
-            User::create([
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
+public function edit(User $user)
+{
+    return response()->json(['data' => $user]);
+}
 
-            return response()->json(['message' => 'Pengguna berhasil ditambahkan.']);
-        } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal menambahkan pengguna.'], 500);
-        }
+public function update(Request $request, User $user)
+{
+    $validator = Validator::make($request->all(), [
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 400);
     }
 
-    public function edit(User $user)
-    {
-        return response()->json(['data' => $user]);
-    }
+    try {
+        $data = [
+            'username' => $request->username,
+            'email' => $request->email,
+        ];
 
-    public function update(Request $request, User $user)
-    {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
         }
 
-        try {
-            $user->update([
-                'username' => $request->username,
-                'email' => $request->email,
-            ]);
+        $user->update($data);
 
-            return response()->json(['message' => 'Data pengguna berhasil diperbarui.']);
-        } catch (\Exception $e) {
-            Log::error('Error updating user: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal memperbarui pengguna.'], 500);
-        }
+        return response()->json(['message' => 'Data pengguna berhasil diperbarui.']);
+    } catch (\Exception $e) {
+        Log::error('Error updating user: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal memperbarui pengguna.'], 500);
     }
+}
     
     public function getTotalUser()
     {

@@ -63,12 +63,17 @@ use App\Http\Controllers\Auth\RegisterController;
     Route::delete('/akun/{user}', [AuthController::class, 'destroy'])->name('users.destroy');
     Route::post('/akun', [AuthController::class, 'store'])->name('pengguna.store');
     Route::put('/akun/{user}', [AuthController::class, 'update'])->name('pengguna.update');
-    Route::get('/akun/{user}/edit', [AuthController::class, 'edit'])->name('pengguna.edit');
+    Route::get('/akun/{user}/edit', [AuthController::class, 'edit'])->name('pengguna.edit');    
     Route::get('/total-users', [AuthController::class, 'getTotalUsers']);
     Route::get('/akun/show', [AuthController::class, 'edit'])->name('client.edit');
     });
+
     //laporan
-    Route::get('/laporan-penyewaan', [LaporanController::class, 'index'])->name('admin.laporan');
+    // Route::get('/laporan-penyewaan', [LaporanController::class, 'index'])->name('admin.laporan');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('admin.laporan');
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.exportExcel');
+    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPDF'])->name('admin.report');
     // Route::get('/laporan', function () {
     //     return view('admin.laporan');
     // })->name('admin.laporan');

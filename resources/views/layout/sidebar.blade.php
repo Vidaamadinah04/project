@@ -42,12 +42,12 @@
         
           @if (auth()->user()->hasRole('admin'))
 
-        <li>
+        {{-- <li>
           <a href="./notifications.html">
             <i class="nc-icon nc-credit-card"></i>
             <p>Transaksi</p>
           </a>
-        </li>
+        </li> --}}
         @endif
         <li>
           <a href="{{ route('admin.laporan') }}">
