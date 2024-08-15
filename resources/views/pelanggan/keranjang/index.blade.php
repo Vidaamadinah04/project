@@ -59,11 +59,15 @@
                                 <button type="button" class="btn btn-sm btn-primary"
                                     onclick="updateQuantity('{{ $cart->id }}', 1)">+</button>
                             </form>
-                        </td>
-                        <td>{{ $cart->produk->harga }}</td>
-                        <td><span id="sub_total_{{ $cart->id }}">{{ $cart->sub_total }}</span></td>
+                            </td>
+                            <td>Rp{{ number_format($cart->produk->harga, 0, ',', '.') }}</td>
+                            <td>
+                                <span id="sub_total_{{ $cart->id }}">Rp{{ number_format($cart->sub_total, 0, ',', '.') }}</span>
+                            </td>
+                            
+                            
 
-                        <td>
+                            <td>
                             <form action="{{ route('hapus.keranjang', ['id' => $cart->id]) }}" method="post"
                                 style="display: inline;">
                                 @csrf
@@ -77,7 +81,7 @@
         </table>
         <div class="row mt-4 justify-content-end">
             <div class="col-md-6 text-md-end">
-                <strong>Total Harga:</strong> Rp <span id="total">0.00</span>
+                <strong>Total Harga:</strong> Rp <span id="total">0</span>
             </div>
         </div>
 
@@ -126,79 +130,99 @@
 
     <script>
         function updateQuantity(cartId, increment) {
-            var jumlahElement = document.getElementById('jumlah_' + cartId);
-            var displayJumlahElement = document.getElementById('display_jumlah_' + cartId);
-            var subTotalElement = document.getElementById('sub_total_' + cartId);
+    var jumlahElement = document.getElementById('jumlah_' + cartId);
+    var displayJumlahElement = document.getElementById('display_jumlah_' + cartId);
+    var subTotalElement = document.getElementById('sub_total_' + cartId);
 
-            var jumlah = parseInt(jumlahElement.value) + increment;
+    var jumlah = parseInt(jumlahElement.value) + increment;
 
-            if (jumlah >= 1) {
-                jumlahElement.value = jumlah;
-                displayJumlahElement.innerHTML = jumlah;
+    if (jumlah >= 1) {
+        jumlahElement.value = jumlah;
+        displayJumlahElement.innerHTML = jumlah;
 
-                // Retrieve product price dynamically from data attribute
-                var harga = parseFloat(document.querySelector('.product-checkbox[data-cart-id="' + cartId + '"]').dataset.harga);
-                var subTotal = jumlah * harga;
-                subTotalElement.innerHTML = subTotal.toFixed(2);
+        // Retrieve product price dynamically from data attribute
+        var harga = parseFloat(document.querySelector('.product-checkbox[data-cart-id="' + cartId + '"]').dataset.harga);
+        var subTotal = jumlah * harga;
+        subTotalElement.innerHTML = subTotal.toLocaleString('id-ID');
 
-                // Update nilai pada form sebelum submit
-                document.getElementById('jumlah_' + cartId).value = jumlah;
+        // Update nilai pada form sebelum submit
+        document.getElementById('jumlah_' + cartId).value = jumlah;
 
-                // Update total
-                updateCheckoutTotal();
-            }
+        // Update total
+        updateCheckoutTotal();
+    }
+}
+
+function updateCheckoutTotal() {
+    var checkboxes = document.querySelectorAll('.product-checkbox');
+    var subtotal = 0;
+
+    checkboxes.forEach(function (checkbox) {
+        var cartId = checkbox.dataset.cartId;
+        var jumlahElement = document.getElementById('jumlah_' + cartId);
+        var subTotalElement = document.getElementById('sub_total_' + cartId);
+
+        if (checkbox.checked) {
+            var harga = parseFloat(checkbox.dataset.harga);
+            var jumlah = parseInt(jumlahElement.value);
+            var subTotal = jumlah * harga;
+            subtotal += subTotal;
+
+            subTotalElement.innerHTML = subTotal.toLocaleString('id-ID');
         }
+    });
 
-        function updateCheckoutTotal() {
-            var checkboxes = document.querySelectorAll('.product-checkbox');
-            var subtotal = 0;
+    // Update subtotal and total in the DOM
+    document.getElementById('total').innerHTML = subtotal.toLocaleString('id-ID');
+}
 
-            checkboxes.forEach(function (checkbox) {
-                var cartId = checkbox.dataset.cartId;
-                var jumlahElement = document.getElementById('jumlah_' + cartId);
-                var subTotalElement = document.getElementById('sub_total_' + cartId);
+function calculateDays(tanggalSewa, tanggalPengembalian) {
+    var sewaDate = new Date(tanggalSewa);
+    var kembaliDate = new Date(tanggalPengembalian);
+    var diffTime = Math.abs(kembaliDate - sewaDate);
+    var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    return diffDays;
+}
 
-                if (checkbox.checked) {
-                    var harga = parseFloat(checkbox.dataset.harga);
-                    var jumlah = parseInt(jumlahElement.value);
-                    var subTotal = jumlah * harga;
-                    subtotal += subTotal;
+function fillCheckoutForm() {
+    var checkboxes = document.querySelectorAll('.product-checkbox:checked');
+    var checkoutProductsContainer = document.getElementById('checkout-products');
+    var tanggalSewa = document.getElementById('tanggal_sewa').value;
+    var tanggalPengembalian = document.getElementById('tanggal_pengembalian').value;
 
-                    subTotalElement.innerHTML = subTotal.toFixed(2);
-                }
-            });
+    checkoutProductsContainer.innerHTML = '';
 
-            // Update subtotal and total in the DOM
-            document.getElementById('total').innerHTML = subtotal.toFixed(2);
-        }
+    if (tanggalSewa && tanggalPengembalian) {
+        var jumlahHari = calculateDays(tanggalSewa, tanggalPengembalian);
+        
+        checkboxes.forEach(function (checkbox) {
+            var cartId = checkbox.dataset.cartId;
+            var jumlah = document.getElementById('jumlah_' + cartId).value;
+            var produkNama = checkbox.closest('tr').querySelector('td:nth-child(3)').innerText;
+            var subTotalPerHari = parseFloat(document.getElementById('sub_total_' + cartId).innerText.replace(/\./g, ''));
+            var subTotal = subTotalPerHari * jumlahHari;
 
-        function fillCheckoutForm() {
-            var checkboxes = document.querySelectorAll('.product-checkbox:checked');
-            var checkoutProductsContainer = document.getElementById('checkout-products');
-            checkoutProductsContainer.innerHTML = '';
-
-            checkboxes.forEach(function (checkbox) {
-                var cartId = checkbox.dataset.cartId;
-                var jumlah = document.getElementById('jumlah_' + cartId).value;
-                var produkNama = checkbox.closest('tr').querySelector('td:nth-child(3)').innerText;
-                var subTotal = document.getElementById('sub_total_' + cartId).innerText;
-
-                var productDetail = `
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">${produkNama}</h5>
-                            <p class="card-text">Jumlah: ${jumlah}</p>
-                            <p class="card-text">Subtotal: Rp ${subTotal}</p>
-                            <input type="hidden" name="id_barang[]" value="${checkbox.value}">
-                            <input type="hidden" name="jumlah[]" value="${jumlah}">
-                            <input type="hidden" name="total_harga[]" value="${subTotal}">
-                        </div>
+            var productDetail = `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${produkNama}</h5>
+                        <p class="card-text">Jumlah: ${jumlah}</p>
+                        <p class="card-text">Subtotal: Rp ${subTotal.toLocaleString('id-ID')}</p>
+                        <input type="hidden" name="id_barang[]" value="${checkbox.value}">
+                        <input type="hidden" name="jumlah[]" value="${jumlah}">
+                        <input type="hidden" name="total_harga[]" value="${subTotal.toLocaleString('id-ID')}">
                     </div>
-                `;
+                </div>
+            `;
 
-                checkoutProductsContainer.insertAdjacentHTML('beforeend', productDetail);
-            });
-        }
+            checkoutProductsContainer.insertAdjacentHTML('beforeend', productDetail);
+        });
+    }
+}
+
+document.getElementById('tanggal_sewa').addEventListener('change', fillCheckoutForm);
+document.getElementById('tanggal_pengembalian').addEventListener('change', fillCheckoutForm);
+
     </script>
 </div>
 @endsection

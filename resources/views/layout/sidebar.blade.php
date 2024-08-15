@@ -62,6 +62,12 @@
             <p>Kelola Akun Pengguna</p>
           </a>
         </li>   
+        <li>
+          <a href="{{ route('kelola.status.pembayaran') }}">
+            <i class="nc-icon nc-paper"></i>
+            <p>Kelola Status Pembayaran</p>
+          </a>
+        </li>
         @endif
         
         {{-- <li>

@@ -58,8 +58,8 @@
                         <img src="{{ asset('storage/'. $produk->gambar) }}" class="img-fluid mb-3" alt="{{ $produk->nama_produk }}">
                       </a>
                       <h2 class="fs-4 fw-bold">{{ $produk->nama_produk }}</h2>
-                      <p class="mb-0">Rp.{{ $produk->harga }}</p>
-            
+                      {{-- <p class="mb-0">Rp.{{ $produk->harga }}</p> --}}
+                      <p class="mb-0">Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
           <br>
           <a href="{{ route('login') }}" class="btn btn-primary">Sewa</a>
 

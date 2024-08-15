@@ -162,7 +162,8 @@
                             </td>
                             <td>{{ $produk->jumlah_unit }}</td>
                             <td>{{ $produk->deskripsi }}</td>
-                            <td>{{ $produk->harga }}</td>
+                            <td>                        <p class="mb-0">Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
+                            </td>
                             <td>
                                 <button onclick="openEditModal({{ $produk->id }})" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Edit
@@ -199,7 +200,8 @@
                             <img src="{{ asset('storage/'. $produk->gambar) }}" class="img-fluid mb-3" alt="{{ $produk->nama_produk }}">
                         </a>
                         <h2 class="fs-4 fw-bold">{{ $produk->nama_produk }}</h2>
-                        <p class="mb-0">Rp. {{ $produk->harga }}</p>
+                        <p class="mb-0">Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
+
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productDetailsModal{{ $produk->id }}">Sewa</button>
                     </div>
                 </div>
@@ -220,7 +222,8 @@
                                 </div>
                                 <div class="col-md-8">
                                     <h5>{{ $produk->nama_produk }}</h5>
-                                    <p>Harga: Rp. {{ $produk->harga }}</p>
+                                    <p class="mb-0">Harga : Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
+                                    {{-- <p>Harga: Rp. {{ $produk->harga }}</p> --}}
                                     <p>Stok: {{ $produk->jumlah_unit }}</p>
                                     <p>Deskripsi: {{ $produk->deskripsi }}</p>
                                     <form action="{{ route('pelanggan.keranjang.store') }}" method="POST">

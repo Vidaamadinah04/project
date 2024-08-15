@@ -42,6 +42,9 @@ use App\Http\Controllers\Auth\RegisterController;
     Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
     Route::delete('/kategori/{kategori}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
+    //kelola status pembayaran
+    Route::get('/kelola-status-pembayaran', [SewaController::class, 'index'])->name('kelola.status.pembayaran');
+
     });
     //produk
     Route::get('/barang', [ProdukController::class, 'index'])->name('barang.index');
@@ -69,14 +72,11 @@ use App\Http\Controllers\Auth\RegisterController;
     });
 
     //laporan
-    // Route::get('/laporan-penyewaan', [LaporanController::class, 'index'])->name('admin.laporan');
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('admin.laporan');
     Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.exportExcel');
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPDF'])->name('admin.report');
-    // Route::get('/laporan', function () {
-    //     return view('admin.laporan');
-    // })->name('admin.laporan');
+    
     //checkout
     // Route::get('/checkout', [CheckoutController::class, 'showForm'])->name('pelanggan.checkout');
     // Route::post('/checkout', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
@@ -84,9 +84,8 @@ use App\Http\Controllers\Auth\RegisterController;
     //payment
     Route::post('/checkout', [SewaController::class, 'store'])->name('pelanggan.payment');
     Route::post('/midtrans-callback', [SewaController::class, 'callback']);
-    // Route::get('/', function () {
-    // return view('index');
-    // });
+    
+
     //search
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/register', [AuthController::class, 'register'])->name('register');

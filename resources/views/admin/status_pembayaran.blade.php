@@ -38,31 +38,22 @@
                             <table class="table table-centered w-100 table-nowrap mb-0" id="tabelkunjungan">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>No.</th>
-                                        @if (auth()->user()->hasRole('admin'))
-                                        <th scope="col">Username</th>
-                                        @endif
-                                        <th scope="col">Tanggal Sewa</th>
+                                        <th>Username</th>
+                                        <th>Tanggal Sewa</th>
                                         <th>Tanggal Pengembalian</th>
-                                        <th scope="col">Nama Produk</th>
-                                        <th scope="col">Jumlah</th>
-                                       
+                                        <th>Total Harga</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($sewas as $item)
-                                        @foreach ($item->details as $detail)
-                                            <tr>
-                                                <td>{{ $loop->parent->iteration }}</td>
-                                                @if (auth()->user()->hasRole('admin'))
-                                                    <td>{{ $item->user->username }}</td>
-                                                @endif
-                                                <td>{{ $item->tanggal_sewa }}</td>
-                                                <td>{{ $item->tanggal_pengembalian }}</td>
-                                                <td>{{ $detail->produkMany ? $detail->produkMany->nama_produk : 'Tidak ada data' }}</td>                                                <td>{{ $detail->jumlah }}</td>
-                                                
-                                            </tr>
-                                        @endforeach
+                                    @foreach($sewas as $sewa)
+                                        <tr>
+                                            <td>{{ $sewa->user->username }}</td>
+                                            <td>{{ $sewa->tanggal_sewa }}</td>
+                                            <td>{{ $sewa->tanggal_pengembalian }}</td>
+                                            <td>{{ $sewa->total_harga }}</td>
+                                            <td>{{ $sewa->status }}</td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
