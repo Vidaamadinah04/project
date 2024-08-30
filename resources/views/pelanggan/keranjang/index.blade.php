@@ -23,53 +23,39 @@
                 @foreach ($keranjang as $cart)
                     <tr>
                         <td>
-                            <input name="id_barang[]" value="{{ $cart->produk->id}}" type="checkbox" class="product-checkbox" data-cart-id="{{ $cart->id }}" data-harga="{{ $cart->produk->harga }}" onchange="updateCheckoutTotal()">
+                            <input name="id_barang[]" value="{{ $cart->produk->id }}" type="checkbox" class="product-checkbox" data-cart-id="{{ $cart->id }}" data-harga="{{ $cart->produk->harga }}" onchange="updateCheckoutTotal()">
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div>
                                     <div class="icon-shape icon-md border p-4 rounded-1">
-                                        <img src="{{ asset('storage/admin/assets/pic/'  . basename($cart->produk->gambar)) }}"
-                                            alt="" style="width: 30px; height: 30px;">
+                                        <img src="{{ asset('storage/admin/assets/pic/'  . basename($cart->produk->gambar)) }}" alt="" style="width: 30px; height: 30px;">
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td>{{ $cart->produk->nama_produk }}</td>
                         <td>
-                            <form action="{{ route('tambah.quantity', ['keranjang_id' => $cart->id]) }}" method="post"
-                                style="display: inline;">
+                            <form action="{{ route('tambah.quantity', ['keranjang_id' => $cart->id]) }}" method="post" style="display: inline;">
                                 @csrf
                                 @method('put')
-                                <input type="hidden" name="jumlah" id="jumlah_{{ $cart->id }}"
-                                    value="{{ $cart->jumlah }}">
-                                <button type="button" class="btn btn-sm btn-secondary"
-                                    onclick="updateQuantity('{{ $cart->id }}', -1)" {{ $cart->jumlah }}>-</button>
+                                <input type="hidden" name="jumlah" id="jumlah_{{ $cart->id }}" value="{{ $cart->jumlah }}">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="updateQuantity('{{ $cart->id }}', -1)">-</button>
                             </form>
-
-                            {{-- Tampilkan jumlah --}}
                             <span id="display_jumlah_{{ $cart->id }}">{{ $cart->jumlah }}</span>
-
-                            <form action="{{ route('tambah.quantity', ['keranjang_id' => $cart->id]) }}" method="post"
-                                style="display: inline;">
+                            <form action="{{ route('tambah.quantity', ['keranjang_id' => $cart->id]) }}" method="post" style="display: inline;">
                                 @csrf
                                 @method('put')
-                                <input type="hidden" name="jumlah" id="jumlah_{{ $cart->id }}"
-                                    value="{{ $cart->jumlah }}">
-                                <button type="button" class="btn btn-sm btn-primary"
-                                    onclick="updateQuantity('{{ $cart->id }}', 1)">+</button>
+                                <input type="hidden" name="jumlah" id="jumlah_{{ $cart->id }}" value="{{ $cart->jumlah }}">
+                                <button type="button" class="btn btn-sm btn-primary" onclick="updateQuantity('{{ $cart->id }}', 1)">+</button>
                             </form>
-                            </td>
-                            <td>Rp{{ number_format($cart->produk->harga, 0, ',', '.') }}</td>
-                            <td>
-                                <span id="sub_total_{{ $cart->id }}">Rp{{ number_format($cart->sub_total, 0, ',', '.') }}</span>
-                            </td>
-                            
-                            
-
-                            <td>
-                            <form action="{{ route('hapus.keranjang', ['id' => $cart->id]) }}" method="post"
-                                style="display: inline;">
+                        </td>
+                        <td>Rp{{ number_format($cart->produk->harga, 0, ',', '.') }}</td>
+                        <td>
+                            <span id="sub_total_{{ $cart->id }}">Rp{{ number_format($cart->sub_total, 0, ',', '.') }}</span>
+                        </td>
+                        <td>
+                            <form action="{{ route('hapus.keranjang', ['id' => $cart->id]) }}" method="post" style="display: inline;">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
@@ -81,7 +67,8 @@
         </table>
         <div class="row mt-4 justify-content-end">
             <div class="col-md-6 text-md-end">
-                <strong>Total Harga:</strong> Rp <span id="total">0</span>
+                <strong>Total Harga:</strong> Rp <span id="total">0</span><br>
+                <strong>DP 50%:</strong> Rp <span id="dp">0</span>
             </div>
         </div>
 
@@ -108,10 +95,6 @@
                     <form id="checkout-form" action="{{ route('pelanggan.payment') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
-                            <label for="bukti_identitas" class="form-label">Bukti Identitas</label>
-                            <input type="file" class="form-control" id="bukti_identitas" name="bukti_identitas" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="tanggal_sewa" class="form-label">Tanggal Sewa</label>
                             <input type="date" class="form-control" id="tanggal_sewa" name="tanggal_sewa" required>
                         </div>
@@ -130,61 +113,56 @@
 
     <script>
         function updateQuantity(cartId, increment) {
-    var jumlahElement = document.getElementById('jumlah_' + cartId);
-    var displayJumlahElement = document.getElementById('display_jumlah_' + cartId);
-    var subTotalElement = document.getElementById('sub_total_' + cartId);
+            var jumlahElement = document.getElementById('jumlah_' + cartId);
+            var displayJumlahElement = document.getElementById('display_jumlah_' + cartId);
+            var subTotalElement = document.getElementById('sub_total_' + cartId);
 
-    var jumlah = parseInt(jumlahElement.value) + increment;
+            var jumlah = parseInt(jumlahElement.value) + increment;
 
-    if (jumlah >= 1) {
-        jumlahElement.value = jumlah;
-        displayJumlahElement.innerHTML = jumlah;
+            if (jumlah >= 1) {
+                jumlahElement.value = jumlah;
+                displayJumlahElement.innerHTML = jumlah;
 
-        // Retrieve product price dynamically from data attribute
-        var harga = parseFloat(document.querySelector('.product-checkbox[data-cart-id="' + cartId + '"]').dataset.harga);
-        var subTotal = jumlah * harga;
-        subTotalElement.innerHTML = subTotal.toLocaleString('id-ID');
+                var harga = parseFloat(document.querySelector('.product-checkbox[data-cart-id="' + cartId + '"]').dataset.harga);
+                var subTotal = jumlah * harga;
+                subTotalElement.innerHTML = 'Rp' + subTotal.toLocaleString('id-ID');
 
-        // Update nilai pada form sebelum submit
-        document.getElementById('jumlah_' + cartId).value = jumlah;
+                document.getElementById('jumlah_' + cartId).value = jumlah;
 
-        // Update total
-        updateCheckoutTotal();
-    }
-}
-
-function updateCheckoutTotal() {
-    var checkboxes = document.querySelectorAll('.product-checkbox');
-    var subtotal = 0;
-
-    checkboxes.forEach(function (checkbox) {
-        var cartId = checkbox.dataset.cartId;
-        var jumlahElement = document.getElementById('jumlah_' + cartId);
-        var subTotalElement = document.getElementById('sub_total_' + cartId);
-
-        if (checkbox.checked) {
-            var harga = parseFloat(checkbox.dataset.harga);
-            var jumlah = parseInt(jumlahElement.value);
-            var subTotal = jumlah * harga;
-            subtotal += subTotal;
-
-            subTotalElement.innerHTML = subTotal.toLocaleString('id-ID');
+                updateCheckoutTotal();
+            }
         }
-    });
 
-    // Update subtotal and total in the DOM
-    document.getElementById('total').innerHTML = subtotal.toLocaleString('id-ID');
-}
+        function updateCheckoutTotal() {
+            var checkboxes = document.querySelectorAll('.product-checkbox');
+            var subtotal = 0;
 
-function calculateDays(tanggalSewa, tanggalPengembalian) {
-    var sewaDate = new Date(tanggalSewa);
-    var kembaliDate = new Date(tanggalPengembalian);
-    var diffTime = Math.abs(kembaliDate - sewaDate);
-    var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    return diffDays;
-}
+            checkboxes.forEach(function (checkbox) {
+                var cartId = checkbox.dataset.cartId;
+                var jumlahElement = document.getElementById('jumlah_' + cartId);
 
-function fillCheckoutForm() {
+                if (checkbox.checked) {
+                    var harga = parseFloat(checkbox.dataset.harga);
+                    var jumlah = parseInt(jumlahElement.value);
+                    var subTotal = jumlah * harga;
+                    subtotal += subTotal;
+                }
+            });
+
+            var dp = subtotal * 0.5;
+            document.getElementById('total').innerHTML = subtotal.toLocaleString('id-ID');
+            document.getElementById('dp').innerHTML = dp.toLocaleString('id-ID');
+        }
+
+        function calculateDays(tanggalSewa, tanggalPengembalian) {
+            var sewaDate = new Date(tanggalSewa);
+            var kembaliDate = new Date(tanggalPengembalian);
+            var diffTime = Math.abs(kembaliDate - sewaDate);
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            return diffDays;
+        }
+
+        function fillCheckoutForm() {
     var checkboxes = document.querySelectorAll('.product-checkbox:checked');
     var checkoutProductsContainer = document.getElementById('checkout-products');
     var tanggalSewa = document.getElementById('tanggal_sewa').value;
@@ -199,8 +177,11 @@ function fillCheckoutForm() {
             var cartId = checkbox.dataset.cartId;
             var jumlah = document.getElementById('jumlah_' + cartId).value;
             var produkNama = checkbox.closest('tr').querySelector('td:nth-child(3)').innerText;
-            var subTotalPerHari = parseFloat(document.getElementById('sub_total_' + cartId).innerText.replace(/\./g, ''));
+            var subTotalPerHari = parseFloat(document.getElementById('sub_total_' + cartId).innerText.replace(/\./g, '').replace('Rp', ''));
             var subTotal = subTotalPerHari * jumlahHari;
+
+            // Hitung DP 50%
+            var dpSubtotal = subTotal * 0.5;
 
             var productDetail = `
                 <div class="card mb-3">
@@ -208,9 +189,10 @@ function fillCheckoutForm() {
                         <h5 class="card-title">${produkNama}</h5>
                         <p class="card-text">Jumlah: ${jumlah}</p>
                         <p class="card-text">Subtotal: Rp ${subTotal.toLocaleString('id-ID')}</p>
+                        <p class="card-text">DP (50%): Rp ${dpSubtotal.toLocaleString('id-ID')}</p>
                         <input type="hidden" name="id_barang[]" value="${checkbox.value}">
                         <input type="hidden" name="jumlah[]" value="${jumlah}">
-                        <input type="hidden" name="total_harga[]" value="${subTotal.toLocaleString('id-ID')}">
+                        <input type="hidden" name="total_harga[]" value="${dpSubtotal.toFixed(2)}">
                     </div>
                 </div>
             `;
@@ -220,8 +202,9 @@ function fillCheckoutForm() {
     }
 }
 
-document.getElementById('tanggal_sewa').addEventListener('change', fillCheckoutForm);
-document.getElementById('tanggal_pengembalian').addEventListener('change', fillCheckoutForm);
+
+        document.getElementById('tanggal_sewa').addEventListener('change', fillCheckoutForm);
+        document.getElementById('tanggal_pengembalian').addEventListener('change', fillCheckoutForm);
 
     </script>
 </div>

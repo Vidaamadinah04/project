@@ -10,6 +10,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\Auth\RegisterController;
 
 
@@ -71,8 +72,16 @@ use App\Http\Controllers\Auth\RegisterController;
     Route::get('/akun/show', [AuthController::class, 'edit'])->name('client.edit');
     });
 
-    //laporan
 
+    // kelola pemesanan
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/pemesanan', [PemesananController::class, 'index'])->name('admin.pemesanan.index');
+        Route::get('/pemesanan/proses', [PemesananController::class, 'proses'])->name('admin.pemesanan.proses');
+        Route::get('/pemesanan/selesai', [PemesananController::class, 'selesai'])->name('admin.pemesanan.selesai');
+    });
+    
+    //laporan
+    
     Route::get('/laporan', [LaporanController::class, 'index'])->name('admin.laporan');
     Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.exportExcel');
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPDF'])->name('admin.report');

@@ -62,12 +62,39 @@
             <p>Kelola Akun Pengguna</p>
           </a>
         </li>   
-        <li>
+        {{-- <li>
           <a href="{{ route('kelola.status.pembayaran') }}">
             <i class="nc-icon nc-paper"></i>
             <p>Kelola Status Pembayaran</p>
           </a>
+        </li> --}}
+        <li>
+          <a href="#pemesananSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <i class="nc-icon nc-paper"></i>
+            <p>Kelola Pemesanan</p>
+          </a>
+          <ul class="collapse list-unstyled" id="pemesananSubmenu">
+            <li>
+              <a href="{{ route('admin.pemesanan.index') }}">
+                <i class="nc-icon nc-bullet-list-67"></i>
+                <p>Semua Pemesanan</p>
+              </a>
+            </li>
+            <li>
+              <a href="{{ route('admin.pemesanan.proses') }}">
+                <i class="nc-icon nc-check-2"></i>
+                <p>Proses Pemesanan</p>
+              </a>
+            </li>
+            <li>
+              <a href="{{ route('admin.pemesanan.selesai') }}">
+                <i class="nc-icon nc-delivery-fast"></i>
+                <p>Pemesanan Selesai</p>
+              </a>
+            </li>
+          </ul>
         </li>
+        
         @endif
         
         {{-- <li>

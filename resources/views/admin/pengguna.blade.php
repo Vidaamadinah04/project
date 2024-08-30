@@ -21,6 +21,7 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
+                        <th>Identitas Foto</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -29,6 +30,7 @@
                     <tr>
                         <td>{{ $user->username }}</td>
                         <td>{{ $user->email }}</td>
+                        <td>{{ $user->identity_photo}}</td>
                         <td>
                             <button type="button" onclick="showEditModal({{ $user->id }})" class="btn btn-warning btn-edit">
                                 <i class="fas fa-edit"></i> Edit

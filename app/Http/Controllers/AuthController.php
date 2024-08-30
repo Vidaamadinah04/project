@@ -45,28 +45,41 @@ class AuthController extends Controller
     }
 
     public function register_proses(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+{
+    // Validasi input termasuk validasi file identitas
+    $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed',
+        'identity_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi file identitas
+    ]);
 
-        // Simpan data pengguna baru ke dalam database
-        $data = [
-            'username' => $request->input('username'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'role' => 1
-        ];
-
-        User::create($data)->assignRole('pelanggan');
-
-        // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
-        return redirect()->route('login')->with('success', 'Registrasi berhasil!');
-
-        // dd($request->all());
+    // Menyimpan file identitas jika ada
+    // if ($request->hasFile('identitas')) {
+    //     $identitasPath = $request->file('identity_photo')->store('storage/identity_photo', 'public');
+    // }
+    if ($request->hasFile('identitas')) {
+        $identitasPath = $request->file('identity_photo')->store('storage/identitas', $request->file('identity_photo')->getClientOriginalName(), 'public');
     }
+    
+
+    // Simpan data pengguna baru ke dalam database
+    $data = [
+        'username' => $request->input('username'),
+        'email' => $request->input('email'),
+        'password' => Hash::make($request->input('password')),
+        'role' => 1,
+        'identity_photo' => $identitasPath ?? null, // Menyimpan path identitas ke database
+    ];
+
+    User::create($data)->assignRole('pelanggan');
+
+    // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
+    \Log::info('Registration successful, redirecting to login');
+return redirect()->route('login')->with('success', 'Registration successful.');
+
+    // return redirect()->route('login')->with('success', 'Registrasi berhasil!');
+}
     public function kelolaPengguna()
     {
     // Ambil semua pengguna dari database

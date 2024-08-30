@@ -15,9 +15,7 @@ class SewaController extends Controller
 {
     public function store(Request $request)
     {
-       // dd($request);
        $validated = $request->validate([
-        'bukti_identitas' => 'required|file|mimes:jpg,png,jpeg',
         'tanggal_sewa' => 'required|date',
         'tanggal_pengembalian' => 'required|date|after:tanggal_sewa',
         'id_barang.*' => 'required|exists:produks,id',
@@ -25,24 +23,20 @@ class SewaController extends Controller
         'total_harga.*' => 'required|numeric|min:0',
     ]);
 
-    $buktiIdentitasPath = $request->file('bukti_identitas')->store('bukti_identitas');
     $produk_ids = $request->id_barang;
 
     $user_id = Auth::id();
 
     $total = 0;
 
-    // Buat transaksi sewa
     $sewa = Sewa::create([
         'user_id' => $user_id,
-        'bukti_identitas' => $buktiIdentitasPath,
         'tanggal_sewa' => $request->tanggal_sewa,
         'tanggal_pengembalian' => $request->tanggal_pengembalian,
         'total_harga' => $total,
         'status' => 'pending',
     ]);
 
-    // Buat detail transaksi sewa
     foreach ($produk_ids as $index => $produk_id) {
         $produk = Produk::find($produk_id);
         if (!$produk) {
@@ -69,17 +63,20 @@ class SewaController extends Controller
     // \Log::info('Midtrans Server Key: ' . Config::$serverKey);
     // \Log::info('Midtrans Client Key: ' . config('services.midtrans.client_key'));
 
-    $params = [
-        'transaction_details' => [
-            'order_id' => $sewa->id,
-            'gross_amount' => $sewa->total_harga,
-        ],
-        'customer_details' => [
-            'first_name' => Auth::user()->name,
-            'email' => Auth::user()->email,
-            'phone' => Auth::user()->phone,
-        ],
-    ];
+    $order_id = $sewa->id . '-' . time(); 
+$params = [
+    'transaction_details' => [
+        'order_id' => $sewa->id,
+        'gross_amount' => $sewa->total_harga,
+    ],
+    'customer_details' => [
+        'first_name' => Auth::user()->name,
+        'email' => Auth::user()->email,
+        'phone' => Auth::user()->phone,
+    ],
+];
+
+   
 
     $snapToken = Snap::getSnapToken($params);
     return view('pelanggan.payment', compact('snapToken', 'sewa'));

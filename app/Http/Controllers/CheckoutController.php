@@ -32,7 +32,7 @@ class CheckoutController extends Controller
 
     public function processCheckout(Request $request)
     {
-        $buktiIdentitasPath = $request->file('bukti_identitas')->store('bukti_identitas');
+        // $buktiIdentitasPath = $request->file('bukti_identitas')->store('bukti_identitas');
         $produk_ids = $request->id_barang;
 
         $user_id = Auth::id();
@@ -42,7 +42,7 @@ class CheckoutController extends Controller
         // Buat transaksi sewa
         $sewa = Sewa::create([
             'user_id' => $user_id,
-            'bukti_identitas' => $buktiIdentitasPath,
+            // 'bukti_identitas' => $buktiIdentitasPath,
             'tanggal_sewa' => $request->tanggal_sewa,
             'tanggal_pengembalian' => $request->tanggal_pengembalian,
             'total_harga' => $total,

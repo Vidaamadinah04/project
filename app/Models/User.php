@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'identity_photo',
     ];
     // const ADMIN_ROLE = 2;
     // const PELANGGAN_ROLE = 1;

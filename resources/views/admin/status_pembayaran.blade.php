@@ -51,8 +51,10 @@
                                             <td>{{ $sewa->user->username }}</td>
                                             <td>{{ $sewa->tanggal_sewa }}</td>
                                             <td>{{ $sewa->tanggal_pengembalian }}</td>
-                                            <td>{{ $sewa->total_harga }}</td>
+                                            {{-- <td>{{ $sewa->total_harga }}</td> --}}
+                                            <td>{{ 'Rp' . number_format($sewa->total_harga, 0, ',', '.') }}</td>
                                             <td>{{ $sewa->status }}</td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
