@@ -19,15 +19,17 @@
                         </div>
                         <div class="col-7 col-md-8">
                             <div class="numbers">
-                                <a href="{{route ('barang.index')}}"> <p class="card-category">Produk</p> </a>
-                                <p class="card-title">3<p>
+                                <a href="{{ route('barang.index') }}">
+                                    <p class="card-category">Produk</p>
+                                </a>
+                                <p class="card-title" id="total-products"></p>
                             </div>
                         </div>
                     </div>
                 </div>
-               
             </div>
         </div>
+        @if(auth()->user()->hasRole('admin'))
         <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="card card-stats">
                 <div class="card-body ">
@@ -39,15 +41,17 @@
                         </div>
                         <div class="col-7 col-md-8">
                             <div class="numbers">
-                                <a href="{{route ('pengguna.index')}}"> <p class="card-category">User</p> </a>
-                                <p class="card-title">3<p>
+                                <a href="{{ route('admin.pengguna') }}">
+                                    <p class="card-category">User</p>
+                                </a>
+                                <p class="card-title" id="total-users"></p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
             </div>
         </div>
+        @endif
         <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="card card-stats">
                 <div class="card-body ">
@@ -59,71 +63,47 @@
                         </div>
                         <div class="col-7 col-md-8">
                             <div class="numbers">
-                                <a href="{{route ('laporan.index')}}"><p class="card-category">Laporan</p></a>
-                                <p class="card-title"> 1
-                                <p>
+                                <a href="{{ route('admin.laporan') }}">
+                                    <p class="card-category">Laporan</p>
+                                </a>
+                                <p class="card-title">1</p>
                             </div>
                         </div>
                     </div>
                 </div>
-               
             </div>
         </div>
-        {{-- <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-5 col-md-4">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc--28 text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="col-7 col-md-8">
-                            <div class="numbers">
-                                <p class="card-category"></p>
-                                <p class="card-title">
-                                <p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-               
-            </div>
-        </div> --}}
     </div>
-    {{-- <div class="row">
-        <div class="col-md-12">
-            <div class="card ">
-                <div class="card-header ">
-                    <h5 class="card-title">Users Behavior</h5>
-                    <p class="card-category">24 Hours performance</p>
-                </div>
-                <div class="card-body ">
-                    <canvas id=chartHours width="400" height="100"></canvas>
-                </div>
-                <div class="card-footer ">
-                    <hr>
-                    <div class="stats">
-                        <i class="fa fa-history"></i> Updated 3 minutes ago
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+
     <div class="row">
-        
         <div class="col-md-12">
             <div class="card card-chart">
                 <div class="card-header">
-                    
                 </div>
                 <div class="card-body">
                     <canvas id="speedChart" width="400" height="100"></canvas>
                 </div>
-                
             </div>
         </div>
     </div>
 @endsection
 @section('js')
+    <script>
+        // Ambil data dari backend
+        fetch('/total-products')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-products').innerText = data.total_products;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+         // Ambil data dari backend
+         fetch('/total-users')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-users').innerText = data.total_users;
+         
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
 @endsection

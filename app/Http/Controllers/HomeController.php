@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('show');
     }
 
     /**
@@ -31,5 +31,10 @@ class HomeController extends Controller
             return view ('pelatih.dashboard');
         }
     }
-    
+    public function show()
+    {
+        $produks = Produk::all(); // Mengambil semua data produk
+        dd($produks);
+        return view('index', compact('produks')); // Mengirimkan data ke view
+    }
 }

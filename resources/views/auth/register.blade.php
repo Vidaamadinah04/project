@@ -24,8 +24,23 @@
           <img src="{{ asset('admin/assets/img/sufi.jpeg') }}" alt="Login Image">
         </div> --}}
         <div class="login">
-            <form method="POST" action="{{ route('register_proses') }}">
+            <form method="POST" action="{{ route('register_proses') }}" enctype="multipart/form-data">
+
+            {{-- <form method="POST" action="{{ route('register_proses') }}"> --}}
                 @csrf
+                <div class="row mb-3">
+                    <label for="identitas" class="col-md-4 col-form-label text-md-end">{{ __('Upload Bukti Identitas') }}</label>
+                
+                    <div class="col-md-6">
+                        <input id="identitas" type="file" class="form-control @error('identitas') is-invalid @enderror" name="identity_photo" required>
+                        
+                        @error('identitas')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
             
                 <div class="row mb-3">
                     <label for="username" class="col-md-4 col-form-label text-md-end">{{ __('Username') }}</label>
@@ -75,7 +90,7 @@
                     </div>
                 </div>
             
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Role') }}</label>
             
                     <div class="col-md-6">
@@ -87,7 +102,7 @@
                             </span>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
             
                 <div class="row mb-0">
                     <div class="col-md-6 offset-md-4">
@@ -95,7 +110,7 @@
                             {{ __('Register') }}
                         </button>
                     </div>
-                    <div class="form-text mt-3">Belum mempunyai akun? 
+                    <div class="form-text mt-3">Sudah mempunyai akun? 
                         <a href="{{ route('login') }}">Masuk</a>
                     </div>
                 </div>

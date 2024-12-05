@@ -9,14 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('kategori', function (Blueprint $table) {
-            $table->id();
-            // $table->char('kode_kategori');
-            $table->string('nama_kategori');
-            $table->timestamps();
-        });
+        // Schema::table('keranjang', function (Blueprint $table) {
+        //     $table->decimal('sub_total', 10, 2)->after('jumlah');
+        // });
     }
 
     /**
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kategori');
+        Schema::table('keranjang', function (Blueprint $table) {
+            //
+        });
     }
 };

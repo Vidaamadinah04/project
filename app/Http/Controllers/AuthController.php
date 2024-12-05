@@ -45,84 +45,120 @@ class AuthController extends Controller
     }
 
     public function register_proses(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'role' => 'required|string|max:255',
-        ]);
+{
+    // Validasi input termasuk validasi file identitas
+    $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed',
+        'identity_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi file identitas
+    ]);
 
-        // Simpan data pengguna baru ke dalam database
-        $data = [
-            'username' => $request->input('username'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'role' => $request->input('role')
-        ];
-
-        User::create($data);
-
-        // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
-        return redirect()->route('login')->with('success', 'Registrasi berhasil!');
-
-        // dd($request->all());
+    // Menyimpan file identitas jika ada
+    // if ($request->hasFile('identitas')) {
+    //     $identitasPath = $request->file('identity_photo')->store('storage/identity_photo', 'public');
+    // }
+    if ($request->hasFile('identitas')) {
+        $identitasPath = $request->file('identity_photo')->store('storage/identitas', $request->file('identity_photo')->getClientOriginalName(), 'public');
     }
+    
+
+    // Simpan data pengguna baru ke dalam database
+    $data = [
+        'username' => $request->input('username'),
+        'email' => $request->input('email'),
+        'password' => Hash::make($request->input('password')),
+        'role' => 1,
+        'identity_photo' => $identitasPath ?? null, // Menyimpan path identitas ke database
+    ];
+
+    User::create($data)->assignRole('pelanggan');
+
+    // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
+    \Log::info('Registration successful, redirecting to login');
+return redirect()->route('login')->with('success', 'Registration successful.');
+
+    // return redirect()->route('login')->with('success', 'Registrasi berhasil!');
+}
     public function kelolaPengguna()
     {
     // Ambil semua pengguna dari database
     $users = User::all();
-    return view('pengguna.index', ['users' => $users]);
+    return view('admin.pengguna', ['users' => $users]);
     }   
     public function destroy(User $user)
     {
     $user->delete();
-    return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil dihapus!');
+    return redirect()->route('admin.pengguna')->with('success', 'Pengguna berhasil dihapus!');
     }
 
     public function store(Request $request)
 {
-    // Validasi data yang dikirim dari form
-    $request->validate([
+    $validator = Validator::make($request->all(), [
         'username' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8', 
-        'role' => 'required|string|max:255',
+        'password' => 'required|string|min:8',
     ]);
 
-    // Simpan data pengguna baru ke dalam database
-    User::create([
-        'username' => $request->username,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => $request->role,
-    ]);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 400);
+    }
 
-    // Redirect atau lakukan tindakan lain setelah berhasil mendaftar
-    return redirect()->route('pengguna.index')->with('success', 'Registrasi berhasil!');
+    try {
+        User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'Pengguna berhasil ditambahkan.']);
+    } catch (\Exception $e) {
+        Log::error('Error creating user: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal menambahkan pengguna.'], 500);
+    }
+}
+
+public function edit(User $user)
+{
+    return response()->json(['data' => $user]);
 }
 
 public function update(Request $request, User $user)
-    {
-        $request->validate([
-            'username' => 'required|string',
-            'email' => 'required|email',
-            'role' => 'required|string|max:255',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:8',
+    ]);
 
-        $user->update([
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 400);
+    }
+
+    try {
+        $data = [
             'username' => $request->username,
             'email' => $request->email,
-            'role' => $request->role,
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
 
         return response()->json(['message' => 'Data pengguna berhasil diperbarui.']);
+    } catch (\Exception $e) {
+        Log::error('Error updating user: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal memperbarui pengguna.'], 500);
     }
-
-    public function edit(User $user)
-    {
-        return response()->json(['data' => $user]);
-    }
+}
     
+    public function getTotalUser()
+    {
+        
+        $totalUsers = User::count(); // Ambil jumlah pengguna dari database
+        return view('admin.dashboard', compact('totalUsers'));
+    }
     
 }

@@ -19,13 +19,15 @@
             <p>Dashboard</p>
           </a>
         </li>
-        
-      <li class="nav-item  ">
-                <a href="{{ route('kategori.index') }}" >
-                  <i class="nc-icon nc-tile-56"></i>
-                  <p>Kategori</p>
-                </a>
-              </li>
+        @if (auth()->user()->hasRole('admin'))
+        <li class="nav-item  ">
+          <a href="{{ route('kategori.index') }}" >
+            <i class="nc-icon nc-tile-56"></i>
+            <p>Kategori</p>
+          </a>
+        </li>
+        @endif
+    
               <li>
                 <a href="{{ route('barang.index') }}">
                     <i class="nc-icon nc-box"></i>
@@ -38,25 +40,62 @@
                 </ul>
           </li>
         
-       
-        <li>
+          @if (auth()->user()->hasRole('admin'))
+
+        {{-- <li>
           <a href="./notifications.html">
             <i class="nc-icon nc-credit-card"></i>
             <p>Transaksi</p>
           </a>
-        </li>
+        </li> --}}
+        @endif
         <li>
-          <a href="{{ route('laporan.index') }}">
+          <a href="{{ route('admin.laporan') }}">
             <i class="nc-icon nc-paper"></i>
             <p>Laporan</p>
           </a>
         </li>
+        @if (auth()->user()->hasRole('admin'))
         <li>
-          <a href="{{ route('pengguna.index') }}">
+          <a href="{{ route('admin.pengguna') }}">
             <i class="nc-icon nc-circle-10"></i>
             <p>Kelola Akun Pengguna</p>
           </a>
+        </li>   
+        {{-- <li>
+          <a href="{{ route('kelola.status.pembayaran') }}">
+            <i class="nc-icon nc-paper"></i>
+            <p>Kelola Status Pembayaran</p>
+          </a>
+        </li> --}}
+        <li>
+          <a href="#pemesananSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+            <i class="nc-icon nc-paper"></i>
+            <p>Kelola Pemesanan</p>
+          </a>
+          <ul class="collapse list-unstyled" id="pemesananSubmenu">
+            <li>
+              <a href="{{ route('admin.pemesanan.index') }}">
+                <i class="nc-icon nc-bullet-list-67"></i>
+                <p>Semua Pemesanan</p>
+              </a>
+            </li>
+            <li>
+              <a href="{{ route('admin.pemesanan.proses') }}">
+                <i class="nc-icon nc-check-2"></i>
+                <p>Proses Pemesanan</p>
+              </a>
+            </li>
+            <li>
+              <a href="{{ route('admin.pemesanan.selesai') }}">
+                <i class="nc-icon nc-delivery-fast"></i>
+                <p>Pemesanan Selesai</p>
+              </a>
+            </li>
+          </ul>
         </li>
+        
+        @endif
         
         {{-- <li>
           <a href="./user.html">

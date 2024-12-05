@@ -27,7 +27,6 @@
                         <thead class="text-dark">
                             <tr>
                                 <th>NO</th>
-                                <th>Kode Kategori</th>
                                 <th>Nama Kategori</th>
                                 <th>Aksi</th>
                             </tr>
@@ -36,13 +35,9 @@
                             @foreach ($kategori as $key => $item)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item->kode_kategori }}</td>
                                     <td>{{ $item->nama_kategori }}</td>
-                                    <td>
-                                        {{-- <button onclick="showCategory({{ $item->id }})" class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i> Show
-                                        </button> --}}
-                                        <button onclick="editCategory({{ $item->id }})" class="btn btn-warning btn-sm">
+                                    <td>                                      
+                                        <button onclick ="editCategory({{ $item->id }})" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i> Edit
                                         </button>
                                         <form action="{{ route('kategori.destroy', $item->id) }}" method="POST" style="display:inline-block;">
@@ -75,10 +70,6 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="kode_kategori" class="form-label">Kode Kategori</label>
-                        <input type="text" class="form-control" placeholder="Masukan Kode Kategori" id="kode_kategori" name="kode_kategori" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="nama_kategori" class="form-label">Nama Kategori</label>
                         <input type="text" class="form-control" placeholder="Masukan Nama Kategori" id="nama_kategori" name="nama_kategori" required>
                     </div>
@@ -93,6 +84,7 @@
 </div>
 <!-- Akhir Modal Tambah -->
 
+
 <!-- Modal Edit -->
 <div class="modal fade" id="ModalEdit" tabindex="-1" aria-labelledby="ModalEditLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -101,12 +93,24 @@
                 <h5 class="modal-title" id="ModalEditLabel">Edit Kategori</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="modalEditContent">
-                <!-- Konten akan dimuat dari AJAX -->
-            </div>
+            <form id="editCategoryForm" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_nama_kategori" class="form-label">Nama Kategori</label>
+                        <input type="text" class="form-control" id="edit_nama_kategori" name="nama_kategori" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-sm me-2" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
 
 
 <!-- Modal Detail Kategori -->
@@ -148,20 +152,23 @@
 }
 
   // Fungsi untuk menampilkan form edit kategori
-  function editCategory(id) {
+ // Fungsi untuk menampilkan form edit kategori
+function editCategory(id) {
     $.ajax({
         url: '/kategori/' + id + '/edit',
         type: 'GET',
-        dataType: 'html',
+        dataType: 'json',
         success: function(response) {
-            $('#modalEditContent').html(response); 
-            $('#ModalEdit').modal('show'); 
+            $('#edit_nama_kategori').val(response.nama_kategori); // Memuat data ke input form
+            $('#editCategoryForm').attr('action', '/kategori/' + id); // Mengatur action form
+            $('#ModalEdit').modal('show'); // Menampilkan modal edit
         },
         error: function(xhr) {
             console.log(xhr.responseText);
         }
     });
 }
+
 
   // Fungsi untuk menghapus kategori
   function deleteCategory(id) {

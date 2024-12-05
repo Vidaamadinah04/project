@@ -2,15 +2,8 @@
 
 @section('css')
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
 @endsection
-
-@section('js')
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-@endsection
-
 
 @section('content')
 <div class="pagetitle col-lg-12">
@@ -28,7 +21,7 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
-                        <th>Role</th>
+                        <th>Identitas Foto</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -37,7 +30,7 @@
                     <tr>
                         <td>{{ $user->username }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
+                        <td>{{ $user->identity_photo}}</td>
                         <td>
                             <button type="button" onclick="showEditModal({{ $user->id }})" class="btn btn-warning btn-edit">
                                 <i class="fas fa-edit"></i> Edit
@@ -84,12 +77,7 @@
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password">
                     </div>
-                    <div class="form-group">
-                        <label for="role">Role</label>
-                        <select class="form-control" id="role" name="role">
-                            <option value="1">User</option>
-                        </select>
-                    </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                         <button type="button" class="btn btn-primary" onclick="submitTambahForm()">Submit</button>
@@ -125,12 +113,10 @@
                         <input type="email" class="form-control" id="editEmail" name="email" placeholder="Masukkan Email">
                     </div>
                     <div class="form-group">
-                        <label for="editRole">Role</label>
-                        <select class="form-control" id="editRole" name="role">
-                            <option value="1">User</option>
-                            <!-- Pilihan role lainnya -->
-                        </select>
+                        <label for="editPassword">Password (kosongkan jika tidak diubah)</label>
+                        <input type="password" class="form-control" id="editPassword" name="password" placeholder="Masukkan Password">
                     </div>
+                    
                 </form>
             </div>
             <div class="modal-footer">
@@ -144,6 +130,8 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     function submitTambahForm() {
         var formData = $('#tambahForm').serialize();
@@ -153,39 +141,31 @@
             data: formData,
             success: function(response) {
                 $('#tambahPenggunaModal').modal('hide');
-                Swal.fire('Sukses', 'Pengguna berhasil ditambahkan!', 'success').then(() => {
+                Swal.fire('Sukses', response.message, 'success').then(() => {
                     location.reload();
                 });
             },
             error: function(xhr) {
                 console.error(xhr.responseText);
+                var errors = JSON.parse(xhr.responseText);
+                Swal.fire('Error', errors.errors ? errors.errors.username[0] : 'Gagal menambahkan pengguna.', 'error');
             }
         });
     }
 
     function showEditModal(userId) {
-        // Mengambil CSRF token dari tag meta
-        var csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-
-        // Ajax untuk mendapatkan data pengguna
         $.ajax({
             url: '/akun/' + userId + '/edit',
             type: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-            },
             success: function(response) {
-                // Mengisi nilai form edit modal dengan data pengguna yang diterima
                 $('#editUserId').val(response.data.id);
                 $('#editUsername').val(response.data.username);
                 $('#editEmail').val(response.data.email);
-                $('#editRole').val(response.data.role);
-                // Menampilkan modal edit
+                $('#editForm').attr('action', '/akun/' + response.data.id); // Update action form
                 $('#editPenggunaModal').modal('show');
             },
             error: function(xhr) {
                 console.error(xhr.responseText);
-                // Tampilkan pesan error jika diperlukan
                 Swal.fire('Error', 'Gagal memuat data pengguna.', 'error');
             }
         });
@@ -194,24 +174,20 @@
     function submitEditForm() {
         var userId = $('#editUserId').val();
         var formData = $('#editForm').serialize();
-        // Ajax untuk menyimpan perubahan pengguna
         $.ajax({
-            url: '/akun/' + userId + '/update',
+            url: '/akun/' + userId,
             type: 'PUT',
             data: formData,
             success: function(response) {
-                // Sembunyikan modal setelah sukses
                 $('#editPenggunaModal').modal('hide');
-                // Tampilkan pesan sukses
-                Swal.fire('Sukses', 'Data pengguna berhasil diperbarui!', 'success').then(() => {
-                    // Reload halaman setelah pesan ditutup
+                Swal.fire('Sukses', response.message, 'success').then(() => {
                     location.reload();
                 });
             },
             error: function(xhr) {
                 console.error(xhr.responseText);
-                // Tampilkan pesan error jika diperlukan
-                Swal.fire('Error', 'Gagal menyimpan perubahan pengguna.', 'error');
+                var errors = JSON.parse(xhr.responseText);
+                Swal.fire('Error', errors.errors ? errors.errors.username[0] : 'Gagal menyimpan perubahan pengguna.', 'error');
             }
         });
     }

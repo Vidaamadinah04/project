@@ -3,10 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Produk;
 use App\Models\Kategori;
+use App\Models\Keranjang;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
@@ -15,15 +16,13 @@ class ProdukController extends Controller
         $produks = Produk::all();
         $kategoris = Kategori::all();
         $ProdukCount = Produk::count();
-        
-        return view('admin.barang', compact('produks', 'kategoris', 'ProdukCount'));
+        $keranjang = Keranjang::where('user_id', auth()->id())->get();
+        return view('admin.barang', compact('produks', 'kategoris', 'ProdukCount', 'keranjang'));
     }
 
     public function ld()
     {
         $produks = Produk::all();
-       
-        
         return view('index', compact('produks'));
     }
 
@@ -51,17 +50,12 @@ class ProdukController extends Controller
         Produk::create($validatedData);
 
         return redirect()->route('barang.index')->with('success', 'Produk berhasil ditambahkan.');
-
-        dd($request->all());
     }
 
     public function show(Produk $barang)
     {
         return view('produk.show', compact('barang'));
     }
-    
-
-   
 
     public function edit($id)
     {
@@ -94,7 +88,6 @@ class ProdukController extends Controller
         $produk->deskripsi = $request->input('deskripsi');
         $produk->harga = $request->input('harga');
     
-        // Handle image upload if provided
         if ($request->hasFile('gambar')) {
             $gambarPath = $request->file('gambar')->store('produk_images');
             $produk->gambar = $gambarPath;
@@ -116,5 +109,9 @@ class ProdukController extends Controller
         return redirect()->route('barang.index')->with('success', 'Produk berhasil dihapus.');
     }
 
-    
+    public function getTotalProducts()
+    {
+        $totalProducts = Produk::count();
+        return response()->json(['total_products' => $totalProducts]);
+    }
 }
